@@ -22,15 +22,11 @@ router.get('/:id', validateID, (req, res) => {
     .then(account => {
       res.status(200).json({ data: account });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({ error: 'Could not get the account from the given id' });
-    })
 })
 
 // POST request
 router.post('/', validateContent, (req, res) => {
-  db('account').insert(req.body, 'id')
+  db('accounts').insert(req.body, 'id')
     .then(ids => {
       res.status(201).json(ids);
     })
@@ -69,14 +65,18 @@ router.delete('/:id', validateID, (req, res) => {
 
 function validateID(req, res, next) {
   const id = req.params.id;
-  const found = db.select('id').from('accounts');
 
-  if (found) {
-    console.log(found)
-    next();
-  } else {
-    res.status(404).json({ message: 'Account with the provided ID could not be found' });
-  }
+  db('accounts').where({ id: id })
+    .then(account => {
+      if(account !=0) {
+        next();
+      } else {
+        res.status(404).json({ message: 'Account at the given index could not be found' });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Account at the given index could not be retrieved' });
+    })
 }
 
 function validateContent(req, res, next) {
