@@ -11,10 +11,9 @@ router.get('/', (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: 'Could not get the accounts' });
     })
 })
-
 
 
 // GET request by ID
@@ -25,13 +24,20 @@ router.get('/:id', validateID, (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({ error: errorMessage });
+      res.status(500).json({ error: 'Could not get the account from the given id' });
     })
 })
 
 // POST request
 router.post('/', validateContent, (req, res) => {
-  db('account').insert
+  db('account').insert(req.body, 'id')
+    .then(ids => {
+      res.status(201).json(ids);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: 'Could not post the new account' });
+    })
 })
 
 // PUT request
@@ -45,7 +51,7 @@ router.put('./:id', validateID, validateContent, (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: 'Could not update the account' });
     })
 })
 
@@ -57,7 +63,7 @@ router.delete('/:id', validateID, (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: 'Could not delete the account' });
     })
 })
 
@@ -75,6 +81,12 @@ function validateID(req, res, next) {
 
 function validateContent(req, res, next) {
   const data = req.body;
+
+  if(data.name && data.budget) {
+    next();
+  } else {
+    res.status(400).json({ message: 'Please provide a valid name and budget' });
+  }
 }
 
 module.exports = router;
