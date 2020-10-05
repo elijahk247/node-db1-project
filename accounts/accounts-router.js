@@ -53,12 +53,11 @@ router.put('./:id', validateID, validateContent, (req, res) => {
 
 // DELETE request
 router.delete('/:id', validateID, (req, res) => {
-  db('account').where({  id: req.params.id }).del()
+  db('account').where({ id: req.params.id }).del()
     .then(count => {
       res.status(200).json({ removed: count });
     })
     .catch(err => {
-      console.log(err);
       res.status(500).json({ error: 'Could not delete the account' });
     })
 })
