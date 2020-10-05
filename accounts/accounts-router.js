@@ -37,8 +37,8 @@ router.post('/', validateContent, (req, res) => {
 })
 
 // PUT request
-router.put('./:id', validateID, validateContent, (req, res) => {
-  db('accounts').where({ id: req.params.id }).change(req.body)
+router.put('/:id', validateID, validateContent, (req, res) => {
+  db('accounts').where({ id: req.params.id }).update(req.body)
     .then(count => {
       db('accounts').where({ id: req.params.id })
         .then(account => {
@@ -53,7 +53,7 @@ router.put('./:id', validateID, validateContent, (req, res) => {
 
 // DELETE request
 router.delete('/:id', validateID, (req, res) => {
-  db('account').where({ id: req.params.id }).del()
+  db('accounts').where({ id: req.params.id }).del()
     .then(count => {
       res.status(200).json({ removed: count });
     })
